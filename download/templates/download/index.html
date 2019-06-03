@@ -4,5 +4,37 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Hello world!</h1>
+<div class="container">
+        <div class="col-lg-12 mt-5">
+            <h2 class="text-center">Welcome to youtube converter!</h2>
+        </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row mt-4">
+
+            <div class="col-lg-4 offset-lg-1">
+                <label for="email">E-mail</label>
+                <input class="form-control" id="email" name="email" placeholder="Enter your e-mail">
+            </div>
+
+            <div class="col-lg-4">
+                <label for="url">Url</label>
+                <input class="form-control" id="url" name="url" placeholder="Enter url">
+            </div>
+
+            <div class="col-lg-2">
+            <label for="inputState">Format</label>
+              <select id="inputState" class="form-control">
+                <option selected>Mp3</option>
+                <option>Nothing</option>
+              </select>
+            </div>
+
+            <div class="col-lg-12 text-center mt-3">
+                    <button type="submit" class="btn btn-success">Download</button>
+            </div>
+
+        </div>
+    </form>
+</div>
 {% endblock %}
