@@ -4,6 +4,7 @@ from .forms import DownloadForm
 from .models import Download
 import youtube_dl
 from django.core.mail import send_mail
+from converter.settings import EMAIL_HOST_USER
 
 def index(request):
     form = DownloadForm(request.POST or None)
@@ -13,7 +14,7 @@ def index(request):
         Download.objects.create(url=url, email=email)
         options = {
         'format': 'bestaudio/best',
-        'outtmpl': 'media/',
+        'outtmpl': 'media/%(id)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -23,6 +24,10 @@ def index(request):
             ydl.download([url])
 
             send_mail(
-               'Received', 'you received message', [email], fail_silently=False
+                'Received',
+                'you received message',
+                EMAIL_HOST_USER,
+                [email],
+                fail_silently=False
             )
     return render(request, 'download/index.html', {'form': form})
