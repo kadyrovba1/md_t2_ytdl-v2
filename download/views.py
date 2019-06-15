@@ -2,32 +2,17 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from .forms import DownloadForm
 from .models import Download
-import youtube_dl
-from django.core.mail import send_mail
-from converter.settings import EMAIL_HOST_USER
+from .tasks import download_mp3
+from django.contrib import messages
 
 def index(request):
     form = DownloadForm(request.POST or None)
     if form.is_valid():
         url = form.cleaned_data.get('url')
         email = form.cleaned_data.get('email')
+        full_url = request.get_host()
         Download.objects.create(url=url, email=email)
-        options = {
-        'format': 'bestaudio/best',
-        'outtmpl': 'media/%(id)s.%(ext)s',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }]}
-        with youtube_dl.YoutubeDL(options) as ydl:
-            ydl.download([url])
-
-            send_mail(
-                'Received',
-                'you received message',
-                EMAIL_HOST_USER,
-                [email],
-                fail_silently=False
-            )
+        download_mp3.delay(url, email, full_url)
+        messages.success(request, 'Your file download link has been sent to your email.')
+        return render(request, 'download/index.html', {'form': form})
     return render(request, 'download/index.html', {'form': form})
