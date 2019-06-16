@@ -9,7 +9,7 @@ from converter.celery import app
 def download_mp3(url, email, full_url):
     options = {
         'format': 'bestaudio/best',
-        'outtmpl': 'media/%(id)s.%(ext)s',
+        'outtmpl': 'media/%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -20,7 +20,7 @@ def download_mp3(url, email, full_url):
         filename = info['title']
 
         send_mail(
-            'Your converted mp3-format is read!',
+            'Your converted mp3-format is ready!',
             ('http://' + full_url + '/media/' + filename).replace(" ", "%20") + '.mp3',
             settings.EMAIL_HOST_USER,
             [email],
